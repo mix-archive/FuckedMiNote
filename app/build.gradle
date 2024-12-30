@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
     buildToolsVersion "32.0.0"
     useLibrary 'org.apache.http.legacy'
 
 
     defaultConfig {
         applicationId "net.micode.notes"
-        minSdkVersion 14
-        targetSdkVersion 14
+        minSdkVersion 27
+        targetSdkVersion 27
     }
 
     buildTypes {
