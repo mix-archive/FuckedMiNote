@@ -132,14 +132,14 @@
         </activity>
 
         <activity
-            android:name="net.micode.notes.ui.NotesPreferenceActivity"
+            android:name=".ui.NotesPreferenceActivity"
             android:label="@string/preferences_title"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Material.Light" >
+            android:theme="@android:style/Theme.Material" >
         </activity>
 
         <service
-            android:name="net.micode.notes.gtask.remote.GTaskSyncService"
+            android:name=".gtask.remote.GTaskSyncService"
             android:exported="false" >
         </service>
 
