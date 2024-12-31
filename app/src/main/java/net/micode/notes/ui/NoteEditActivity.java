@@ -57,6 +57,7 @@ import android.widget.Toast;
 import net.micode.notes.R;
 import net.micode.notes.data.Notes;
 import net.micode.notes.data.Notes.TextNote;
+import net.micode.notes.model.IntelligenceIntentService;
 import net.micode.notes.model.WorkingNote;
 import net.micode.notes.model.WorkingNote.NoteSettingChangedListener;
 import net.micode.notes.tool.DataUtils;
@@ -76,7 +77,7 @@ import java.util.regex.Pattern;
 
 public class NoteEditActivity extends Activity implements OnClickListener,
         NoteSettingChangedListener, OnTextViewChangeListener {
-    private class HeadViewHolder {
+    private static class HeadViewHolder {
         public TextView tvModified;
 
         public ImageView ivAlertIcon;
@@ -144,8 +145,10 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private static final int SHORTCUT_ICON_TITLE_MAX_LEN = 10;
 
-    public static final String TAG_CHECKED = String.valueOf('\u221A');
-    public static final String TAG_UNCHECKED = String.valueOf('\u25A1');
+    public static final String TAG_CHECKED = String.valueOf('√');
+    public static final String TAG_UNCHECKED = String.valueOf('□');
+
+
 
     private LinearLayout mEditTextList;
 
@@ -548,6 +551,9 @@ public class NoteEditActivity extends Activity implements OnClickListener,
             case R.id.menu_delete_remind:
                 mWorkingNote.setAlertDate(0, false);
                 break;
+            case R.id.menu_intelli_formalize:
+                formalizeText();
+                break;
             default:
                 break;
         }
@@ -873,5 +879,36 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private void showToast(int resId, int duration) {
         Toast.makeText(this, resId, duration).show();
+    }
+
+    private void formalizeText() {
+        assert mWorkingNote != null;
+        String content = mNoteEditor.getText().toString();
+        PendingIntent reply = createPendingResult(0, new Intent(), 0);
+        Intent intent = new Intent(this, IntelligenceIntentService.class);
+        intent.putExtra(IntelligenceIntentService.COMPLETION_QUERY_EXTRA, content);
+        intent.putExtra(IntelligenceIntentService.COMPLETION_PENDING_REPLY_EXTRA, reply);
+        startService(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 0) {
+            switch (resultCode) {
+                case IntelligenceIntentService.SUCCESS_CODE:
+                    assert data != null;
+                    assert mWorkingNote != null;
+                    String completion = data.getStringExtra(IntelligenceIntentService.COMPLETION_EXTRA);
+                    mWorkingNote.setWorkingText(completion);
+                    mNoteEditor.setText(getHighlightQueryResult(completion, mUserQuery));
+                    break;
+                case IntelligenceIntentService.ERROR_CODE:
+                    showToast(R.string.error_formalize_text);
+                    break;
+                default:
+                    break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

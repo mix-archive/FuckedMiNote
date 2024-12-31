@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 
-<menu
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
@@ -34,6 +34,9 @@
         android:id="@+id/menu_list_mode"
         android:title="@string/menu_list_mode" />
 
+    <item
+        android:id="@+id/menu_intelli_formalize"
+        android:title="@string/formalize_menu_label" />
     <item
         android:id="@+id/menu_share"
         android:title="@string/menu_share"/>
