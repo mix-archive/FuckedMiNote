@@ -51,6 +51,7 @@
         </activity>
 
         <activity
+            android:exported="true"
             android:name=".ui.NoteEditActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop"
@@ -87,6 +88,7 @@
 
         <receiver
             android:name=".widget.NoteWidgetProvider_2x"
+            android:exported="true"
             android:label="@string/app_widget2x2" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -100,7 +102,8 @@
         </receiver>
         <receiver
             android:name=".widget.NoteWidgetProvider_4x"
-            android:label="@string/app_widget4x4" >
+            android:exported="true"
+            android:label="@string/app_widget4x4">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -113,7 +116,9 @@
                 android:resource="@xml/widget_4x_info" />
         </receiver>
 
-        <receiver android:name=".ui.AlarmInitReceiver" >
+        <receiver
+            android:name=".ui.AlarmInitReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
