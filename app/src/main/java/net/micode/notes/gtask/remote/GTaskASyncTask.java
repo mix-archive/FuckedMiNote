@@ -23,6 +23,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import net.micode.notes.R;
 import net.micode.notes.ui.NotesListActivity;
@@ -31,19 +32,20 @@ import net.micode.notes.ui.NotesPreferenceActivity;
 
 public class GTaskASyncTask extends AsyncTask<Void, String, Integer> {
 
-    private static int GTASK_SYNC_NOTIFICATION_ID = 5234235;
+    private static final int GTASK_SYNC_NOTIFICATION_ID = 5234235;
 
     public interface OnCompleteListener {
         void onComplete();
     }
 
-    private Context mContext;
+    private final Context mContext;
 
-    private NotificationManager mNotifiManager;
+    private final NotificationManager mNotifiManager;
 
-    private GTaskManager mTaskManager;
+    @NonNull
+    private final GTaskManager mTaskManager;
 
-    private OnCompleteListener mOnCompleteListener;
+    private final OnCompleteListener mOnCompleteListener;
 
     public GTaskASyncTask(Context context, OnCompleteListener listener) {
         mContext = context;
@@ -58,9 +60,7 @@ public class GTaskASyncTask extends AsyncTask<Void, String, Integer> {
     }
 
     public void publishProgess(String message) {
-        publishProgress(new String[] {
-            message
-        });
+        publishProgress(message);
     }
 
     private void showNotification(int tickerId, String content) {
@@ -87,6 +87,7 @@ public class GTaskASyncTask extends AsyncTask<Void, String, Integer> {
     }
 
 
+    @NonNull
     @Override
     protected Integer doInBackground(Void... unused) {
         publishProgess(mContext.getString(R.string.sync_progress_login, NotesPreferenceActivity
@@ -95,7 +96,7 @@ public class GTaskASyncTask extends AsyncTask<Void, String, Integer> {
     }
 
     @Override
-    protected void onProgressUpdate(String... progress) {
+    protected void onProgressUpdate(@NonNull String... progress) {
         showNotification(R.string.ticker_syncing, progress[0]);
         if (mContext instanceof GTaskSyncService) {
             ((GTaskSyncService) mContext).sendBroadcast(progress[0]);

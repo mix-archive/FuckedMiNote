@@ -26,6 +26,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -36,6 +38,7 @@ import net.micode.notes.data.NotesDatabaseHelper.TABLE;
 
 
 public class NotesProvider extends ContentProvider {
+    @NonNull
     private static final UriMatcher mMatcher;
 
     private NotesDatabaseHelper mHelper;
@@ -73,7 +76,7 @@ public class NotesProvider extends ContentProvider {
         + "'" + Intent.ACTION_VIEW + "' AS " + SearchManager.SUGGEST_COLUMN_INTENT_ACTION + ","
         + "'" + Notes.TextNote.CONTENT_TYPE + "' AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA;
 
-    private static String NOTES_SNIPPET_SEARCH_QUERY = "SELECT " + NOTES_SEARCH_PROJECTION
+    private static final String NOTES_SNIPPET_SEARCH_QUERY = "SELECT " + NOTES_SEARCH_PROJECTION
         + " FROM " + TABLE.NOTE
         + " WHERE " + NoteColumns.SNIPPET + " LIKE ?"
         + " AND " + NoteColumns.PARENT_ID + "<>" + Notes.ID_TRASH_FOLER
@@ -86,8 +89,8 @@ public class NotesProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-            String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, String selection, String[] selectionArgs,
+                        @Nullable String sortOrder) {
         Cursor c = null;
         SQLiteDatabase db = mHelper.getReadableDatabase();
         String id = null;
@@ -135,7 +138,7 @@ public class NotesProvider extends ContentProvider {
                     c = db.rawQuery(NOTES_SNIPPET_SEARCH_QUERY,
                             new String[] { searchString });
                 } catch (IllegalStateException ex) {
-                    Log.e(TAG, "got exception: " + ex.toString());
+                    Log.e(TAG, "got exception: " + ex);
                 }
                 break;
             default:
@@ -148,7 +151,7 @@ public class NotesProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, @NonNull ContentValues values) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         long dataId = 0, noteId = 0, insertedId = 0;
         switch (mMatcher.match(uri)) {
@@ -159,7 +162,7 @@ public class NotesProvider extends ContentProvider {
                 if (values.containsKey(DataColumns.NOTE_ID)) {
                     noteId = values.getAsLong(DataColumns.NOTE_ID);
                 } else {
-                    Log.d(TAG, "Wrong data format without note id:" + values.toString());
+                    Log.d(TAG, "Wrong data format without note id:" + values);
                 }
                 insertedId = dataId = db.insert(TABLE.DATA, null, values);
                 break;
@@ -182,7 +185,7 @@ public class NotesProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         int count = 0;
         String id = null;
         SQLiteDatabase db = mHelper.getWritableDatabase();
@@ -228,7 +231,7 @@ public class NotesProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, @NonNull String[] selectionArgs) {
         int count = 0;
         String id = null;
         SQLiteDatabase db = mHelper.getWritableDatabase();
@@ -267,11 +270,12 @@ public class NotesProvider extends ContentProvider {
         return count;
     }
 
+    @NonNull
     private String parseSelection(String selection) {
         return (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : "");
     }
 
-    private void increaseNoteVersion(long id, String selection, String[] selectionArgs) {
+    private void increaseNoteVersion(long id, String selection, @NonNull String[] selectionArgs) {
         StringBuilder sql = new StringBuilder(120);
         sql.append("UPDATE ");
         sql.append(TABLE.NOTE);
@@ -283,7 +287,7 @@ public class NotesProvider extends ContentProvider {
             sql.append(" WHERE ");
         }
         if (id > 0) {
-            sql.append(NoteColumns.ID + "=" + String.valueOf(id));
+            sql.append(NoteColumns.ID + "=" + id);
         }
         if (!TextUtils.isEmpty(selection)) {
             String selectString = id > 0 ? parseSelection(selection) : selection;

@@ -22,6 +22,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import net.micode.notes.data.Notes;
@@ -86,9 +88,9 @@ public class SqlNote {
 
     public static final int VERSION_COLUMN = 16;
 
-    private Context mContext;
+    private final Context mContext;
 
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     private boolean mIsCreate;
 
@@ -118,11 +120,13 @@ public class SqlNote {
 
     private long mVersion;
 
-    private ContentValues mDiffNoteValues;
+    @NonNull
+    private final ContentValues mDiffNoteValues;
 
-    private ArrayList<SqlData> mDataList;
+    @NonNull
+    private final ArrayList<SqlData> mDataList;
 
-    public SqlNote(Context context) {
+    public SqlNote(@NonNull Context context) {
         mContext = context;
         mContentResolver = context.getContentResolver();
         mIsCreate = true;
@@ -143,7 +147,7 @@ public class SqlNote {
         mDataList = new ArrayList<SqlData>();
     }
 
-    public SqlNote(Context context, Cursor c) {
+    public SqlNote(@NonNull Context context, @NonNull Cursor c) {
         mContext = context;
         mContentResolver = context.getContentResolver();
         mIsCreate = false;
@@ -154,7 +158,7 @@ public class SqlNote {
         mDiffNoteValues = new ContentValues();
     }
 
-    public SqlNote(Context context, long id) {
+    public SqlNote(@NonNull Context context, long id) {
         mContext = context;
         mContentResolver = context.getContentResolver();
         mIsCreate = false;
@@ -185,7 +189,7 @@ public class SqlNote {
         }
     }
 
-    private void loadFromCursor(Cursor c) {
+    private void loadFromCursor(@NonNull Cursor c) {
         mId = c.getLong(ID_COLUMN);
         mAlertDate = c.getLong(ALERTED_DATE_COLUMN);
         mBgColorId = c.getInt(BG_COLOR_ID_COLUMN);
@@ -226,7 +230,7 @@ public class SqlNote {
         }
     }
 
-    public boolean setContent(JSONObject js) {
+    public boolean setContent(@NonNull JSONObject js) {
         try {
             JSONObject note = js.getJSONObject(GTaskStringUtils.META_HEAD_NOTE);
             if (note.getInt(NoteColumns.TYPE) == Notes.TYPE_SYSTEM) {
@@ -359,6 +363,7 @@ public class SqlNote {
         return true;
     }
 
+    @Nullable
     public JSONObject getContent() {
         try {
             JSONObject js = new JSONObject();
@@ -450,7 +455,7 @@ public class SqlNote {
             try {
                 mId = Long.valueOf(uri.getPathSegments().get(1));
             } catch (NumberFormatException e) {
-                Log.e(TAG, "Get note id error :" + e.toString());
+                Log.e(TAG, "Get note id error :" + e);
                 throw new ActionFailureException("create note failed");
             }
             if (mId == 0) {

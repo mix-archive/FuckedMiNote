@@ -18,6 +18,7 @@ package net.micode.notes.ui;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -43,13 +44,14 @@ public class FoldersListAdapter extends CursorAdapter {
         // TODO Auto-generated constructor stub
     }
 
+    @NonNull
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return new FolderListItem(context);
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, @NonNull Context context, @NonNull Cursor cursor) {
         if (view instanceof FolderListItem) {
             String folderName = (cursor.getLong(ID_COLUMN) == Notes.ID_ROOT_FOLDER) ? context
                     .getString(R.string.menu_move_parent_folder) : cursor.getString(NAME_COLUMN);
@@ -57,19 +59,19 @@ public class FoldersListAdapter extends CursorAdapter {
         }
     }
 
-    public String getFolderName(Context context, int position) {
+    public String getFolderName(@NonNull Context context, int position) {
         Cursor cursor = (Cursor) getItem(position);
         return (cursor.getLong(ID_COLUMN) == Notes.ID_ROOT_FOLDER) ? context
                 .getString(R.string.menu_move_parent_folder) : cursor.getString(NAME_COLUMN);
     }
 
     private class FolderListItem extends LinearLayout {
-        private TextView mName;
+        private final TextView mName;
 
         public FolderListItem(Context context) {
             super(context);
             inflate(context, R.layout.folder_list_item, this);
-            mName = (TextView) findViewById(R.id.tv_folder_name);
+            mName = findViewById(R.id.tv_folder_name);
         }
 
         public void bind(String name) {

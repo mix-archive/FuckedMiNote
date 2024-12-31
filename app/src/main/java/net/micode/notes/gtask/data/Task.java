@@ -17,6 +17,8 @@
 package net.micode.notes.gtask.data;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -37,12 +39,16 @@ public class Task extends Node {
 
     private boolean mCompleted;
 
+    @Nullable
     private String mNotes;
 
+    @Nullable
     private JSONObject mMetaInfo;
 
+    @Nullable
     private Task mPriorSibling;
 
+    @Nullable
     private TaskList mParent;
 
     public Task() {
@@ -54,6 +60,7 @@ public class Task extends Node {
         mMetaInfo = null;
     }
 
+    @NonNull
     public JSONObject getCreateAction(int actionId) {
         JSONObject js = new JSONObject();
 
@@ -103,6 +110,7 @@ public class Task extends Node {
         return js;
     }
 
+    @NonNull
     public JSONObject getUpdateAction(int actionId) {
         JSONObject js = new JSONObject();
 
@@ -135,7 +143,7 @@ public class Task extends Node {
         return js;
     }
 
-    public void setContentByRemoteJSON(JSONObject js) {
+    public void setContentByRemoteJSON(@Nullable JSONObject js) {
         if (js != null) {
             try {
                 // id
@@ -175,7 +183,7 @@ public class Task extends Node {
         }
     }
 
-    public void setContentByLocalJSON(JSONObject js) {
+    public void setContentByLocalJSON(@Nullable JSONObject js) {
         if (js == null || !js.has(GTaskStringUtils.META_HEAD_NOTE)
                 || !js.has(GTaskStringUtils.META_HEAD_DATA)) {
             Log.w(TAG, "setContentByLocalJSON: nothing is avaiable");
@@ -204,6 +212,7 @@ public class Task extends Node {
         }
     }
 
+    @Nullable
     public JSONObject getLocalJSONFromContent() {
         String name = getName();
         try {
@@ -247,7 +256,7 @@ public class Task extends Node {
         }
     }
 
-    public void setMetaInfo(MetaData metaData) {
+    public void setMetaInfo(@Nullable MetaData metaData) {
         if (metaData != null && metaData.getNotes() != null) {
             try {
                 mMetaInfo = new JSONObject(metaData.getNotes());
@@ -258,7 +267,7 @@ public class Task extends Node {
         }
     }
 
-    public int getSyncAction(Cursor c) {
+    public int getSyncAction(@NonNull Cursor c) {
         try {
             JSONObject noteInfo = null;
             if (mMetaInfo != null && mMetaInfo.has(GTaskStringUtils.META_HEAD_NOTE)) {

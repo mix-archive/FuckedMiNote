@@ -20,6 +20,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -34,7 +35,8 @@ import net.micode.notes.tool.ResourceParser.NoteBgResources;
 
 public class WorkingNote {
     // Note for the working note
-    private Note mNote;
+    @NonNull
+    private final Note mNote;
     // Note Id
     private long mNoteId;
     // Note content
@@ -54,7 +56,7 @@ public class WorkingNote {
 
     private long mFolderId;
 
-    private Context mContext;
+    private final Context mContext;
 
     private static final String TAG = "WorkingNote";
 
@@ -174,8 +176,9 @@ public class WorkingNote {
         }
     }
 
+    @NonNull
     public static WorkingNote createEmptyNote(Context context, long folderId, int widgetId,
-            int widgetType, int defaultBgColorId) {
+                                              int widgetType, int defaultBgColorId) {
         WorkingNote note = new WorkingNote(context, folderId);
         note.setBgColorId(defaultBgColorId);
         note.setWidgetId(widgetId);
@@ -183,6 +186,7 @@ public class WorkingNote {
         return note;
     }
 
+    @NonNull
     public static WorkingNote load(Context context, long id) {
         return new WorkingNote(context, id, 0);
     }
@@ -217,12 +221,8 @@ public class WorkingNote {
     }
 
     private boolean isWorthSaving() {
-        if (mIsDeleted || (!existInDatabase() && TextUtils.isEmpty(mContent))
-                || (existInDatabase() && !mNote.isLocalModified())) {
-            return false;
-        } else {
-            return true;
-        }
+        return !mIsDeleted && (existInDatabase() || !TextUtils.isEmpty(mContent))
+                && (!existInDatabase() || mNote.isLocalModified());
     }
 
     public void setOnSettingStatusChangedListener(NoteSettingChangedListener l) {
@@ -295,7 +295,7 @@ public class WorkingNote {
     }
 
     public boolean hasClockAlert() {
-        return (mAlertDate > 0 ? true : false);
+        return (mAlertDate > 0);
     }
 
     public String getContent() {

@@ -22,6 +22,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import net.micode.notes.data.Notes;
@@ -55,7 +57,7 @@ public class SqlData {
 
     public static final int DATA_CONTENT_DATA_3_COLUMN = 4;
 
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     private boolean mIsCreate;
 
@@ -69,9 +71,10 @@ public class SqlData {
 
     private String mDataContentData3;
 
-    private ContentValues mDiffDataValues;
+    @NonNull
+    private final ContentValues mDiffDataValues;
 
-    public SqlData(Context context) {
+    public SqlData(@NonNull Context context) {
         mContentResolver = context.getContentResolver();
         mIsCreate = true;
         mDataId = INVALID_ID;
@@ -82,14 +85,14 @@ public class SqlData {
         mDiffDataValues = new ContentValues();
     }
 
-    public SqlData(Context context, Cursor c) {
+    public SqlData(@NonNull Context context, @NonNull Cursor c) {
         mContentResolver = context.getContentResolver();
         mIsCreate = false;
         loadFromCursor(c);
         mDiffDataValues = new ContentValues();
     }
 
-    private void loadFromCursor(Cursor c) {
+    private void loadFromCursor(@NonNull Cursor c) {
         mDataId = c.getLong(DATA_ID_COLUMN);
         mDataMimeType = c.getString(DATA_MIME_TYPE_COLUMN);
         mDataContent = c.getString(DATA_CONTENT_COLUMN);
@@ -97,7 +100,7 @@ public class SqlData {
         mDataContentData3 = c.getString(DATA_CONTENT_DATA_3_COLUMN);
     }
 
-    public void setContent(JSONObject js) throws JSONException {
+    public void setContent(@NonNull JSONObject js) throws JSONException {
         long dataId = js.has(DataColumns.ID) ? js.getLong(DataColumns.ID) : INVALID_ID;
         if (mIsCreate || mDataId != dataId) {
             mDiffDataValues.put(DataColumns.ID, dataId);
@@ -130,6 +133,7 @@ public class SqlData {
         mDataContentData3 = dataContentData3;
     }
 
+    @Nullable
     public JSONObject getContent() throws JSONException {
         if (mIsCreate) {
             Log.e(TAG, "it seems that we haven't created this in database yet");
@@ -156,7 +160,7 @@ public class SqlData {
             try {
                 mDataId = Long.valueOf(uri.getPathSegments().get(1));
             } catch (NumberFormatException e) {
-                Log.e(TAG, "Get note id error :" + e.toString());
+                Log.e(TAG, "Get note id error :" + e);
                 throw new ActionFailureException("create note failed");
             }
         } else {

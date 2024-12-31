@@ -18,6 +18,8 @@ package net.micode.notes.ui;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import net.micode.notes.data.Contact;
@@ -55,18 +57,19 @@ public class NoteItemData {
     private static final int WIDGET_ID_COLUMN             = 10;
     private static final int WIDGET_TYPE_COLUMN           = 11;
 
-    private long mId;
-    private long mAlertDate;
-    private int mBgColorId;
-    private long mCreatedDate;
-    private boolean mHasAttachment;
-    private long mModifiedDate;
-    private int mNotesCount;
-    private long mParentId;
+    private final long mId;
+    private final long mAlertDate;
+    private final int mBgColorId;
+    private final long mCreatedDate;
+    private final boolean mHasAttachment;
+    private final long mModifiedDate;
+    private final int mNotesCount;
+    private final long mParentId;
     private String mSnippet;
-    private int mType;
-    private int mWidgetId;
-    private int mWidgetType;
+    private final int mType;
+    private final int mWidgetId;
+    private final int mWidgetType;
+    @Nullable
     private String mName;
     private String mPhoneNumber;
 
@@ -76,12 +79,12 @@ public class NoteItemData {
     private boolean mIsOneNoteFollowingFolder;
     private boolean mIsMultiNotesFollowingFolder;
 
-    public NoteItemData(Context context, Cursor cursor) {
+    public NoteItemData(@NonNull Context context, @NonNull Cursor cursor) {
         mId = cursor.getLong(ID_COLUMN);
         mAlertDate = cursor.getLong(ALERTED_DATE_COLUMN);
         mBgColorId = cursor.getInt(BG_COLOR_ID_COLUMN);
         mCreatedDate = cursor.getLong(CREATED_DATE_COLUMN);
-        mHasAttachment = (cursor.getInt(HAS_ATTACHMENT_COLUMN) > 0) ? true : false;
+        mHasAttachment = cursor.getInt(HAS_ATTACHMENT_COLUMN) > 0;
         mModifiedDate = cursor.getLong(MODIFIED_DATE_COLUMN);
         mNotesCount = cursor.getInt(NOTES_COUNT_COLUMN);
         mParentId = cursor.getLong(PARENT_ID_COLUMN);
@@ -109,9 +112,9 @@ public class NoteItemData {
         checkPostion(cursor);
     }
 
-    private void checkPostion(Cursor cursor) {
-        mIsLastItem = cursor.isLast() ? true : false;
-        mIsFirstItem = cursor.isFirst() ? true : false;
+    private void checkPostion(@NonNull Cursor cursor) {
+        mIsLastItem = cursor.isLast();
+        mIsFirstItem = cursor.isFirst();
         mIsOnlyOneItem = (cursor.getCount() == 1);
         mIsMultiNotesFollowingFolder = false;
         mIsOneNoteFollowingFolder = false;
@@ -218,7 +221,7 @@ public class NoteItemData {
         return (mParentId == Notes.ID_CALL_RECORD_FOLDER && !TextUtils.isEmpty(mPhoneNumber));
     }
 
-    public static int getNoteType(Cursor cursor) {
+    public static int getNoteType(@NonNull Cursor cursor) {
         return cursor.getInt(TYPE_COLUMN);
     }
 }

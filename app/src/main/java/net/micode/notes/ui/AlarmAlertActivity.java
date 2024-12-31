@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -44,6 +45,7 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
     private long mNoteId;
     private String mSnippet;
     private static final int SNIPPET_PREW_MAX_LEN = 60;
+    @Nullable
     MediaPlayer mPlayer;
 
     @Override

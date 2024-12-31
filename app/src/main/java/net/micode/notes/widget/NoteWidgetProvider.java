@@ -22,6 +22,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -46,7 +48,7 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "NoteWidgetProvider";
 
     @Override
-    public void onDeleted(Context context, int[] appWidgetIds) {
+    public void onDeleted(@NonNull Context context, @NonNull int[] appWidgetIds) {
         ContentValues values = new ContentValues();
         values.put(NoteColumns.WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         for (int i = 0; i < appWidgetIds.length; i++) {
@@ -57,7 +59,8 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private Cursor getNoteWidgetInfo(Context context, int widgetId) {
+    @Nullable
+    private Cursor getNoteWidgetInfo(@NonNull Context context, int widgetId) {
         return context.getContentResolver().query(Notes.CONTENT_NOTE_URI,
                 PROJECTION,
                 NoteColumns.WIDGET_ID + "=? AND " + NoteColumns.PARENT_ID + "<>?",
@@ -65,12 +68,12 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
                 null);
     }
 
-    protected void update(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    protected void update(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager, @NonNull int[] appWidgetIds) {
         update(context, appWidgetManager, appWidgetIds, false);
     }
 
-    private void update(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds,
-            boolean privacyMode) {
+    private void update(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager, @NonNull int[] appWidgetIds,
+                        boolean privacyMode) {
         for (int i = 0; i < appWidgetIds.length; i++) {
             if (appWidgetIds[i] != AppWidgetManager.INVALID_APPWIDGET_ID) {
                 int bgId = ResourceParser.getDefaultBgId(context);

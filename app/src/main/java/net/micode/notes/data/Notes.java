@@ -17,6 +17,8 @@
 package net.micode.notes.data;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
+
 public class Notes {
     public static final String AUTHORITY = "micode_notes";
     public static final String TAG = "Notes";
@@ -37,8 +39,8 @@ public class Notes {
     public static final int ID_PRIVATE_FOLDER = 2;
     public static final int ID_BIN_FOLDER = 3;
 
+    @NonNull
     public static String PRIVATE_PASSWD = "";
-    public static final String INTENT_EXTRA_ALERT_DATE = "net.micode.notes.alert_date";
     public static final String INTENT_EXTRA_BACKGROUND_ID = "net.micode.notes.background_color_id";
     public static final String INTENT_EXTRA_WIDGET_ID = "net.micode.notes.widget_id";
     public static final String INTENT_EXTRA_WIDGET_TYPE = "net.micode.notes.widget_type";
@@ -69,105 +71,105 @@ public class Notes {
          * The unique ID for a row
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String ID = "_id";
+        String ID = "_id";
 
         /**
          * The parent's id for note or folder
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String PARENT_ID = "parent_id";
+        String PARENT_ID = "parent_id";
 
         /**
          * Created data for note or folder
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String CREATED_DATE = "created_date";
+        String CREATED_DATE = "created_date";
 
         /**
          * Latest modified date
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String MODIFIED_DATE = "modified_date";
+        String MODIFIED_DATE = "modified_date";
 
 
         /**
          * Alert date
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String ALERTED_DATE = "alert_date";
+        String ALERTED_DATE = "alert_date";
 
         /**
          * Folder's name or text content of note
          * <P> Type: TEXT </P>
          */
-        public static final String SNIPPET = "snippet";
+        String SNIPPET = "snippet";
 
         /**
          * Note's widget id
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String WIDGET_ID = "widget_id";
+        String WIDGET_ID = "widget_id";
 
         /**
          * Note's widget type
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String WIDGET_TYPE = "widget_type";
+        String WIDGET_TYPE = "widget_type";
 
         /**
          * Note's background color's id
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String BG_COLOR_ID = "bg_color_id";
+        String BG_COLOR_ID = "bg_color_id";
 
         /**
          * For text note, it doesn't has attachment, for multi-media
          * note, it has at least one attachment
          * <P> Type: INTEGER </P>
          */
-        public static final String HAS_ATTACHMENT = "has_attachment";
+        String HAS_ATTACHMENT = "has_attachment";
 
         /**
          * Folder's count of notes
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String NOTES_COUNT = "notes_count";
+        String NOTES_COUNT = "notes_count";
 
         /**
          * The file type: folder or note
          * <P> Type: INTEGER </P>
          */
-        public static final String TYPE = "type";
+        String TYPE = "type";
 
         /**
          * The last sync id
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String SYNC_ID = "sync_id";
+        String SYNC_ID = "sync_id";
 
         /**
          * Sign to indicate local modified or not
          * <P> Type: INTEGER </P>
          */
-        public static final String LOCAL_MODIFIED = "local_modified";
+        String LOCAL_MODIFIED = "local_modified";
 
         /**
          * Original parent id before moving into temporary folder
          * <P> Type : INTEGER </P>
          */
-        public static final String ORIGIN_PARENT_ID = "origin_parent_id";
+        String ORIGIN_PARENT_ID = "origin_parent_id";
 
         /**
          * The gtask id
          * <P> Type : TEXT </P>
          */
-        public static final String GTASK_ID = "gtask_id";
+        String GTASK_ID = "gtask_id";
 
         /**
          * The version code
          * <P> Type : INTEGER (long) </P>
          */
-        public static final String VERSION = "version";
+        String VERSION = "version";
     }
 
     public interface DataColumns {
@@ -175,73 +177,73 @@ public class Notes {
          * The unique ID for a row
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String ID = "_id";
+        String ID = "_id";
 
         /**
          * The MIME type of the item represented by this row.
          * <P> Type: Text </P>
          */
-        public static final String MIME_TYPE = "mime_type";
+        String MIME_TYPE = "mime_type";
 
         /**
          * The reference id to note that this data belongs to
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String NOTE_ID = "note_id";
+        String NOTE_ID = "note_id";
 
         /**
          * Created data for note or folder
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String CREATED_DATE = "created_date";
+        String CREATED_DATE = "created_date";
 
         /**
          * Latest modified date
          * <P> Type: INTEGER (long) </P>
          */
-        public static final String MODIFIED_DATE = "modified_date";
+        String MODIFIED_DATE = "modified_date";
 
         /**
          * Data's content
          * <P> Type: TEXT </P>
          */
-        public static final String CONTENT = "content";
+        String CONTENT = "content";
 
 
         /**
-         * Generic data column, the meaning is {@link #MIMETYPE} specific, used for
+         * Generic data column, the meaning is {@link #MIME_TYPE} specific, used for
          * integer data type
          * <P> Type: INTEGER </P>
          */
-        public static final String DATA1 = "data1";
+        String DATA1 = "data1";
 
         /**
-         * Generic data column, the meaning is {@link #MIMETYPE} specific, used for
+         * Generic data column, the meaning is {@link #MIME_TYPE} specific, used for
          * integer data type
          * <P> Type: INTEGER </P>
          */
-        public static final String DATA2 = "data2";
+        String DATA2 = "data2";
 
         /**
-         * Generic data column, the meaning is {@link #MIMETYPE} specific, used for
+         * Generic data column, the meaning is {@link #MIME_TYPE} specific, used for
          * TEXT data type
          * <P> Type: TEXT </P>
          */
-        public static final String DATA3 = "data3";
+        String DATA3 = "data3";
 
         /**
-         * Generic data column, the meaning is {@link #MIMETYPE} specific, used for
+         * Generic data column, the meaning is {@link #MIME_TYPE} specific, used for
          * TEXT data type
          * <P> Type: TEXT </P>
          */
-        public static final String DATA4 = "data4";
+        String DATA4 = "data4";
 
         /**
-         * Generic data column, the meaning is {@link #MIMETYPE} specific, used for
+         * Generic data column, the meaning is {@link #MIME_TYPE} specific, used for
          * TEXT data type
          * <P> Type: TEXT </P>
          */
-        public static final String DATA5 = "data5";
+        String DATA5 = "data5";
     }
 
     public static final class TextNote implements DataColumns {

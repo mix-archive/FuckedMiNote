@@ -18,6 +18,7 @@ package net.micode.notes.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import net.micode.notes.R;
 import net.micode.notes.data.Notes;
@@ -26,7 +27,7 @@ import net.micode.notes.tool.ResourceParser;
 
 public class NoteWidgetProvider_4x extends NoteWidgetProvider {
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager, @NonNull int[] appWidgetIds) {
         super.update(context, appWidgetManager, appWidgetIds);
     }
 

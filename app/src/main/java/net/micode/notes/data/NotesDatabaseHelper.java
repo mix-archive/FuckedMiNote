@@ -20,6 +20,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import net.micode.notes.data.Notes.DataColumns;
@@ -33,9 +34,9 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 4;
 
     public interface TABLE {
-        public static final String NOTE = "note";
+        String NOTE = "note";
 
-        public static final String DATA = "data";
+        String DATA = "data";
     }
 
     private static final String TAG = "NotesDatabaseHelper";
@@ -210,14 +211,14 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    public void createNoteTable(SQLiteDatabase db) {
+    public void createNoteTable(@NonNull SQLiteDatabase db) {
         db.execSQL(CREATE_NOTE_TABLE_SQL);
         reCreateNoteTableTriggers(db);
         createSystemFolder(db);
         Log.d(TAG, "note table has been created");
     }
 
-    private void reCreateNoteTableTriggers(SQLiteDatabase db) {
+    private void reCreateNoteTableTriggers(@NonNull SQLiteDatabase db) {
         db.execSQL("DROP TRIGGER IF EXISTS increase_folder_count_on_update");
         db.execSQL("DROP TRIGGER IF EXISTS decrease_folder_count_on_update");
         db.execSQL("DROP TRIGGER IF EXISTS decrease_folder_count_on_delete");
@@ -235,7 +236,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(FOLDER_MOVE_NOTES_ON_TRASH_TRIGGER);
     }
 
-    private void createSystemFolder(SQLiteDatabase db) {
+    private void createSystemFolder(@NonNull SQLiteDatabase db) {
         ContentValues values = new ContentValues();
 
         /**
@@ -270,14 +271,14 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE.NOTE, null, values);
     }
 
-    public void createDataTable(SQLiteDatabase db) {
+    public void createDataTable(@NonNull SQLiteDatabase db) {
         db.execSQL(CREATE_DATA_TABLE_SQL);
         reCreateDataTableTriggers(db);
         db.execSQL(CREATE_DATA_NOTE_ID_INDEX_SQL);
         Log.d(TAG, "data table has been created");
     }
 
-    private void reCreateDataTableTriggers(SQLiteDatabase db) {
+    private void reCreateDataTableTriggers(@NonNull SQLiteDatabase db) {
         db.execSQL("DROP TRIGGER IF EXISTS update_note_content_on_insert");
         db.execSQL("DROP TRIGGER IF EXISTS update_note_content_on_update");
         db.execSQL("DROP TRIGGER IF EXISTS update_note_content_on_delete");
@@ -287,6 +288,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DATA_UPDATE_NOTE_CONTENT_ON_DELETE_TRIGGER);
     }
 
+    @NonNull
     static synchronized NotesDatabaseHelper getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new NotesDatabaseHelper(context);
@@ -295,13 +297,13 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(@NonNull SQLiteDatabase db) {
         createNoteTable(db);
         createDataTable(db);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
         boolean reCreateTriggers = false;
         boolean skipV2 = false;
 
@@ -333,14 +335,14 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void upgradeToV2(SQLiteDatabase db) {
+    private void upgradeToV2(@NonNull SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE.NOTE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE.DATA);
         createNoteTable(db);
         createDataTable(db);
     }
 
-    private void upgradeToV3(SQLiteDatabase db) {
+    private void upgradeToV3(@NonNull SQLiteDatabase db) {
         // drop unused triggers
         db.execSQL("DROP TRIGGER IF EXISTS update_note_modified_date_on_insert");
         db.execSQL("DROP TRIGGER IF EXISTS update_note_modified_date_on_delete");
@@ -355,7 +357,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE.NOTE, null, values);
     }
 
-    private void upgradeToV4(SQLiteDatabase db) {
+    private void upgradeToV4(@NonNull SQLiteDatabase db) {
         db.execSQL("ALTER TABLE " + TABLE.NOTE + " ADD COLUMN " + NoteColumns.VERSION
                 + " INTEGER NOT NULL DEFAULT 0");
     }

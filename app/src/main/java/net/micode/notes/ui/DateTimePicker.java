@@ -23,6 +23,7 @@ import net.micode.notes.R;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,9 +51,10 @@ public class DateTimePicker extends FrameLayout {
     private final NumberPicker mHourSpinner;
     private final NumberPicker mMinuteSpinner;
     private final NumberPicker mAmPmSpinner;
-    private Calendar mDate;
+    @NonNull
+    private final Calendar mDate;
 
-    private String[] mDateDisplayValues = new String[DAYS_IN_ALL_WEEK];
+    private final String[] mDateDisplayValues = new String[DAYS_IN_ALL_WEEK];
 
     private boolean mIsAm;
 
@@ -64,7 +66,7 @@ public class DateTimePicker extends FrameLayout {
 
     private OnDateTimeChangedListener mOnDateTimeChangedListener;
 
-    private NumberPicker.OnValueChangeListener mOnDateChangedListener = new NumberPicker.OnValueChangeListener() {
+    private final NumberPicker.OnValueChangeListener mOnDateChangedListener = new NumberPicker.OnValueChangeListener() {
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
             mDate.add(Calendar.DAY_OF_YEAR, newVal - oldVal);
@@ -73,7 +75,7 @@ public class DateTimePicker extends FrameLayout {
         }
     };
 
-    private NumberPicker.OnValueChangeListener mOnHourChangedListener = new NumberPicker.OnValueChangeListener() {
+    private final NumberPicker.OnValueChangeListener mOnHourChangedListener = new NumberPicker.OnValueChangeListener() {
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
             boolean isDateChanged = false;
@@ -115,7 +117,7 @@ public class DateTimePicker extends FrameLayout {
         }
     };
 
-    private NumberPicker.OnValueChangeListener mOnMinuteChangedListener = new NumberPicker.OnValueChangeListener() {
+    private final NumberPicker.OnValueChangeListener mOnMinuteChangedListener = new NumberPicker.OnValueChangeListener() {
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
             int minValue = mMinuteSpinner.getMinValue();
@@ -144,7 +146,7 @@ public class DateTimePicker extends FrameLayout {
         }
     };
 
-    private NumberPicker.OnValueChangeListener mOnAmPmChangedListener = new NumberPicker.OnValueChangeListener() {
+    private final NumberPicker.OnValueChangeListener mOnAmPmChangedListener = new NumberPicker.OnValueChangeListener() {
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
             mIsAm = !mIsAm;
@@ -163,36 +165,36 @@ public class DateTimePicker extends FrameLayout {
                 int dayOfMonth, int hourOfDay, int minute);
     }
 
-    public DateTimePicker(Context context) {
+    public DateTimePicker(@NonNull Context context) {
         this(context, System.currentTimeMillis());
     }
 
-    public DateTimePicker(Context context, long date) {
+    public DateTimePicker(@NonNull Context context, long date) {
         this(context, date, DateFormat.is24HourFormat(context));
     }
 
-    public DateTimePicker(Context context, long date, boolean is24HourView) {
+    public DateTimePicker(@NonNull Context context, long date, boolean is24HourView) {
         super(context);
         mDate = Calendar.getInstance();
         mInitialising = true;
         mIsAm = getCurrentHourOfDay() >= HOURS_IN_HALF_DAY;
         inflate(context, R.layout.datetime_picker, this);
 
-        mDateSpinner = (NumberPicker) findViewById(R.id.date);
+        mDateSpinner = findViewById(R.id.date);
         mDateSpinner.setMinValue(DATE_SPINNER_MIN_VAL);
         mDateSpinner.setMaxValue(DATE_SPINNER_MAX_VAL);
         mDateSpinner.setOnValueChangedListener(mOnDateChangedListener);
 
-        mHourSpinner = (NumberPicker) findViewById(R.id.hour);
+        mHourSpinner = findViewById(R.id.hour);
         mHourSpinner.setOnValueChangedListener(mOnHourChangedListener);
-        mMinuteSpinner =  (NumberPicker) findViewById(R.id.minute);
+        mMinuteSpinner = findViewById(R.id.minute);
         mMinuteSpinner.setMinValue(MINUT_SPINNER_MIN_VAL);
         mMinuteSpinner.setMaxValue(MINUT_SPINNER_MAX_VAL);
         mMinuteSpinner.setOnLongPressUpdateInterval(100);
         mMinuteSpinner.setOnValueChangedListener(mOnMinuteChangedListener);
 
         String[] stringsForAmPm = new DateFormatSymbols().getAmPmStrings();
-        mAmPmSpinner = (NumberPicker) findViewById(R.id.amPm);
+        mAmPmSpinner = findViewById(R.id.amPm);
         mAmPmSpinner.setMinValue(AMPM_SPINNER_MIN_VAL);
         mAmPmSpinner.setMaxValue(AMPM_SPINNER_MAX_VAL);
         mAmPmSpinner.setDisplayedValues(stringsForAmPm);

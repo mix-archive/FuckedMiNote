@@ -17,6 +17,7 @@
 package net.micode.notes.ui;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,9 +29,10 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import net.micode.notes.R;
 
 public class DropdownMenu {
-    private Button mButton;
-    private PopupMenu mPopupMenu;
-    private Menu mMenu;
+    private final Button mButton;
+    @NonNull
+    private final PopupMenu mPopupMenu;
+    private final Menu mMenu;
 
     public DropdownMenu(Context context, Button button, int menuId) {
         mButton = button;

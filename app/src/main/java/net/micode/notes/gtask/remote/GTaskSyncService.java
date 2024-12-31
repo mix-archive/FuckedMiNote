@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public class GTaskSyncService extends Service {
     public final static String ACTION_STRING_NAME = "sync_action_type";
@@ -38,6 +40,7 @@ public class GTaskSyncService extends Service {
 
     public final static String GTASK_SERVICE_BROADCAST_PROGRESS_MSG = "progressMsg";
 
+    @Nullable
     private static GTaskASyncTask mSyncTask = null;
 
     private static String mSyncProgress = "";
@@ -68,7 +71,7 @@ public class GTaskSyncService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@NonNull Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
         if (bundle != null && bundle.containsKey(ACTION_STRING_NAME)) {
             switch (bundle.getInt(ACTION_STRING_NAME, ACTION_INVALID)) {
@@ -105,14 +108,14 @@ public class GTaskSyncService extends Service {
         sendBroadcast(intent);
     }
 
-    public static void startSync(Activity activity) {
+    public static void startSync(@NonNull Activity activity) {
         GTaskManager.getInstance().setActivityContext(activity);
         Intent intent = new Intent(activity, GTaskSyncService.class);
         intent.putExtra(GTaskSyncService.ACTION_STRING_NAME, GTaskSyncService.ACTION_START_SYNC);
         activity.startService(intent);
     }
 
-    public static void cancelSync(Context context) {
+    public static void cancelSync(@NonNull Context context) {
         Intent intent = new Intent(context, GTaskSyncService.class);
         intent.putExtra(GTaskSyncService.ACTION_STRING_NAME, GTaskSyncService.ACTION_CANCEL_SYNC);
         context.startService(intent);

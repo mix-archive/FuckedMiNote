@@ -17,6 +17,7 @@
 package net.micode.notes.ui;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.CheckBox;
@@ -31,24 +32,24 @@ import net.micode.notes.tool.ResourceParser.NoteItemBgResources;
 
 
 public class NotesListItem extends LinearLayout {
-    private ImageView mAlert;
-    private TextView mTitle;
-    private TextView mTime;
-    private TextView mCallName;
+    private final ImageView mAlert;
+    private final TextView mTitle;
+    private final TextView mTime;
+    private final TextView mCallName;
     private NoteItemData mItemData;
-    private CheckBox mCheckBox;
+    private final CheckBox mCheckBox;
 
     public NotesListItem(Context context) {
         super(context);
         inflate(context, R.layout.note_item, this);
-        mAlert = (ImageView) findViewById(R.id.iv_alert_icon);
-        mTitle = (TextView) findViewById(R.id.tv_title);
-        mTime = (TextView) findViewById(R.id.tv_time);
-        mCallName = (TextView) findViewById(R.id.tv_name);
-        mCheckBox = (CheckBox) findViewById(android.R.id.checkbox);
+        mAlert = findViewById(R.id.iv_alert_icon);
+        mTitle = findViewById(R.id.tv_title);
+        mTime = findViewById(R.id.tv_time);
+        mCallName = findViewById(R.id.tv_name);
+        mCheckBox = findViewById(android.R.id.checkbox);
     }
 
-    public void bind(Context context, NoteItemData data, boolean choiceMode, boolean checked) {
+    public void bind(@NonNull Context context, @NonNull NoteItemData data, boolean choiceMode, boolean checked) {
         if (choiceMode && data.getType() == Notes.TYPE_NOTE) {
             mCheckBox.setVisibility(View.VISIBLE);
             mCheckBox.setChecked(checked);
@@ -99,7 +100,7 @@ public class NotesListItem extends LinearLayout {
         setBackground(data);
     }
 
-    private void setBackground(NoteItemData data) {
+    private void setBackground(@NonNull NoteItemData data) {
         int id = data.getBgColorId();
         if (data.getType() == Notes.TYPE_NOTE) {
             if (data.isSingle() || data.isOneFollowingFolder()) {

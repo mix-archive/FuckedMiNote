@@ -17,6 +17,7 @@
 package net.micode.notes.gtask.data;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
@@ -39,6 +40,7 @@ public abstract class Node {
 
     public static final int SYNC_ACTION_ERROR = 8;
 
+    @Nullable
     private String mGid;
 
     private String mName;
@@ -62,6 +64,7 @@ public abstract class Node {
 
     public abstract void setContentByLocalJSON(JSONObject js);
 
+    @Nullable
     public abstract JSONObject getLocalJSONFromContent();
 
     public abstract int getSyncAction(Cursor c);

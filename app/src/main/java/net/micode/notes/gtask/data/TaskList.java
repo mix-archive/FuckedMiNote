@@ -17,6 +17,8 @@
 package net.micode.notes.gtask.data;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import net.micode.notes.data.Notes;
@@ -35,7 +37,8 @@ public class TaskList extends Node {
 
     private int mIndex;
 
-    private ArrayList<Task> mChildren;
+    @NonNull
+    private final ArrayList<Task> mChildren;
 
     public TaskList() {
         super();
@@ -43,6 +46,7 @@ public class TaskList extends Node {
         mIndex = 1;
     }
 
+    @NonNull
     public JSONObject getCreateAction(int actionId) {
         JSONObject js = new JSONObject();
 
@@ -74,6 +78,7 @@ public class TaskList extends Node {
         return js;
     }
 
+    @NonNull
     public JSONObject getUpdateAction(int actionId) {
         JSONObject js = new JSONObject();
 
@@ -103,7 +108,7 @@ public class TaskList extends Node {
         return js;
     }
 
-    public void setContentByRemoteJSON(JSONObject js) {
+    public void setContentByRemoteJSON(@Nullable JSONObject js) {
         if (js != null) {
             try {
                 // id
@@ -129,7 +134,7 @@ public class TaskList extends Node {
         }
     }
 
-    public void setContentByLocalJSON(JSONObject js) {
+    public void setContentByLocalJSON(@Nullable JSONObject js) {
         if (js == null || !js.has(GTaskStringUtils.META_HEAD_NOTE)) {
             Log.w(TAG, "setContentByLocalJSON: nothing is avaiable");
         }
@@ -157,6 +162,7 @@ public class TaskList extends Node {
         }
     }
 
+    @Nullable
     public JSONObject getLocalJSONFromContent() {
         try {
             JSONObject js = new JSONObject();
@@ -164,8 +170,8 @@ public class TaskList extends Node {
 
             String folderName = getName();
             if (getName().startsWith(GTaskStringUtils.MIUI_FOLDER_PREFFIX))
-                folderName = folderName.substring(GTaskStringUtils.MIUI_FOLDER_PREFFIX.length(),
-                        folderName.length());
+                folderName = folderName.substring(GTaskStringUtils.MIUI_FOLDER_PREFFIX.length()
+                );
             folder.put(NoteColumns.SNIPPET, folderName);
             if (folderName.equals(GTaskStringUtils.FOLDER_DEFAULT)
                     || folderName.equals(GTaskStringUtils.FOLDER_CALL_NOTE))
@@ -183,7 +189,7 @@ public class TaskList extends Node {
         }
     }
 
-    public int getSyncAction(Cursor c) {
+    public int getSyncAction(@NonNull Cursor c) {
         try {
             if (c.getInt(SqlNote.LOCAL_MODIFIED_COLUMN) == 0) {
                 // there is no local update
@@ -220,7 +226,7 @@ public class TaskList extends Node {
         return mChildren.size();
     }
 
-    public boolean addChildTask(Task task) {
+    public boolean addChildTask(@Nullable Task task) {
         boolean ret = false;
         if (task != null && !mChildren.contains(task)) {
             ret = mChildren.add(task);
@@ -234,7 +240,7 @@ public class TaskList extends Node {
         return ret;
     }
 
-    public boolean addChildTask(Task task, int index) {
+    public boolean addChildTask(@Nullable Task task, int index) {
         if (index < 0 || index > mChildren.size()) {
             Log.e(TAG, "add child task: invalid index");
             return false;
@@ -260,7 +266,7 @@ public class TaskList extends Node {
         return true;
     }
 
-    public boolean removeChildTask(Task task) {
+    public boolean removeChildTask(@NonNull Task task) {
         boolean ret = false;
         int index = mChildren.indexOf(task);
         if (index != -1) {
@@ -281,7 +287,7 @@ public class TaskList extends Node {
         return ret;
     }
 
-    public boolean moveChildTask(Task task, int index) {
+    public boolean moveChildTask(@NonNull Task task, int index) {
 
         if (index < 0 || index >= mChildren.size()) {
             Log.e(TAG, "move child task: invalid index");
@@ -299,6 +305,7 @@ public class TaskList extends Node {
         return (removeChildTask(task) && addChildTask(task, index));
     }
 
+    @Nullable
     public Task findChildTaskByGid(String gid) {
         for (int i = 0; i < mChildren.size(); i++) {
             Task t = mChildren.get(i);
@@ -313,6 +320,7 @@ public class TaskList extends Node {
         return mChildren.indexOf(task);
     }
 
+    @Nullable
     public Task getChildTaskByIndex(int index) {
         if (index < 0 || index >= mChildren.size()) {
             Log.e(TAG, "getTaskByIndex: invalid index");
@@ -321,6 +329,7 @@ public class TaskList extends Node {
         return mChildren.get(index);
     }
 
+    @Nullable
     public Task getChilTaskByGid(String gid) {
         for (Task task : mChildren) {
             if (task.getGid().equals(gid))

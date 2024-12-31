@@ -19,6 +19,8 @@ package net.micode.notes.tool;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -41,7 +43,8 @@ public class BackupUtils {
     // Singleton stuff
     private static BackupUtils sInstance;
 
-    public static synchronized BackupUtils getInstance(Context context) {
+    @NonNull
+    public static synchronized BackupUtils getInstance(@NonNull Context context) {
         if (sInstance == null) {
             sInstance = new BackupUtils(context);
         }
@@ -63,9 +66,10 @@ public class BackupUtils {
     // Backup or restore success
     public static final int STATE_SUCCESS                      = 4;
 
-    private TextExport mTextExport;
+    @NonNull
+    private final TextExport mTextExport;
 
-    private BackupUtils(Context context) {
+    private BackupUtils(@NonNull Context context) {
         mTextExport = new TextExport(context);
     }
 
@@ -116,16 +120,18 @@ public class BackupUtils {
 
         private static final int DATA_COLUMN_PHONE_NUMBER = 4;
 
+        @NonNull
         private final String [] TEXT_FORMAT;
         private static final int FORMAT_FOLDER_NAME          = 0;
         private static final int FORMAT_NOTE_DATE            = 1;
         private static final int FORMAT_NOTE_CONTENT         = 2;
 
-        private Context mContext;
+        @NonNull
+        private final Context mContext;
         private String mFileName;
         private String mFileDirectory;
 
-        public TextExport(Context context) {
+        public TextExport(@NonNull Context context) {
             TEXT_FORMAT = context.getResources().getStringArray(R.array.format_for_exported_note);
             mContext = context;
             mFileName = "";
@@ -139,7 +145,7 @@ public class BackupUtils {
         /**
          * Export the folder identified by folder id to text
          */
-        private void exportFolderToText(String folderId, PrintStream ps) {
+        private void exportFolderToText(String folderId, @NonNull PrintStream ps) {
             // Query notes belong to this folder
             Cursor notesCursor = mContext.getContentResolver().query(Notes.CONTENT_NOTE_URI,
                     NOTE_PROJECTION, NoteColumns.PARENT_ID + "=?", new String[] {
@@ -150,9 +156,9 @@ public class BackupUtils {
                 if (notesCursor.moveToFirst()) {
                     do {
                         // Print note's last modified date
-                        ps.println(String.format(getFormat(FORMAT_NOTE_DATE), DateFormat.format(
+                        ps.printf((getFormat(FORMAT_NOTE_DATE)) + "%n", DateFormat.format(
                                 mContext.getString(R.string.format_datetime_mdhm),
-                                notesCursor.getLong(NOTE_COLUMN_MODIFIED_DATE))));
+                                notesCursor.getLong(NOTE_COLUMN_MODIFIED_DATE)));
                         // Query data belong to this note
                         String noteId = notesCursor.getString(NOTE_COLUMN_ID);
                         exportNoteToText(noteId, ps);
@@ -165,7 +171,7 @@ public class BackupUtils {
         /**
          * Export note identified by id to a print stream
          */
-        private void exportNoteToText(String noteId, PrintStream ps) {
+        private void exportNoteToText(String noteId, @NonNull PrintStream ps) {
             Cursor dataCursor = mContext.getContentResolver().query(Notes.CONTENT_DATA_URI,
                     DATA_PROJECTION, DataColumns.NOTE_ID + "=?", new String[] {
                         noteId
@@ -182,23 +188,23 @@ public class BackupUtils {
                             String location = dataCursor.getString(DATA_COLUMN_CONTENT);
 
                             if (!TextUtils.isEmpty(phoneNumber)) {
-                                ps.println(String.format(getFormat(FORMAT_NOTE_CONTENT),
-                                        phoneNumber));
+                                ps.printf((getFormat(FORMAT_NOTE_CONTENT)) + "%n",
+                                        phoneNumber);
                             }
                             // Print call date
-                            ps.println(String.format(getFormat(FORMAT_NOTE_CONTENT), DateFormat
+                            ps.printf((getFormat(FORMAT_NOTE_CONTENT)) + "%n", DateFormat
                                     .format(mContext.getString(R.string.format_datetime_mdhm),
-                                            callDate)));
+                                            callDate));
                             // Print call attachment location
                             if (!TextUtils.isEmpty(location)) {
-                                ps.println(String.format(getFormat(FORMAT_NOTE_CONTENT),
-                                        location));
+                                ps.printf((getFormat(FORMAT_NOTE_CONTENT)) + "%n",
+                                        location);
                             }
                         } else if (DataConstants.NOTE.equals(mimeType)) {
                             String content = dataCursor.getString(DATA_COLUMN_CONTENT);
                             if (!TextUtils.isEmpty(content)) {
-                                ps.println(String.format(getFormat(FORMAT_NOTE_CONTENT),
-                                        content));
+                                ps.printf((getFormat(FORMAT_NOTE_CONTENT)) + "%n",
+                                        content);
                             }
                         }
                     } while (dataCursor.moveToNext());
@@ -248,7 +254,7 @@ public class BackupUtils {
                             folderName = folderCursor.getString(NOTE_COLUMN_SNIPPET);
                         }
                         if (!TextUtils.isEmpty(folderName)) {
-                            ps.println(String.format(getFormat(FORMAT_FOLDER_NAME), folderName));
+                            ps.printf((getFormat(FORMAT_FOLDER_NAME)) + "%n", folderName);
                         }
                         String folderId = folderCursor.getString(NOTE_COLUMN_ID);
                         exportFolderToText(folderId, ps);
@@ -267,9 +273,9 @@ public class BackupUtils {
             if (noteCursor != null) {
                 if (noteCursor.moveToFirst()) {
                     do {
-                        ps.println(String.format(getFormat(FORMAT_NOTE_DATE), DateFormat.format(
+                        ps.printf((getFormat(FORMAT_NOTE_DATE)) + "%n", DateFormat.format(
                                 mContext.getString(R.string.format_datetime_mdhm),
-                                noteCursor.getLong(NOTE_COLUMN_MODIFIED_DATE))));
+                                noteCursor.getLong(NOTE_COLUMN_MODIFIED_DATE)));
                         // Query data belong to this note
                         String noteId = noteCursor.getString(NOTE_COLUMN_ID);
                         exportNoteToText(noteId, ps);
@@ -285,6 +291,7 @@ public class BackupUtils {
         /**
          * Get a print stream pointed to the file {@generateExportedTextFile}
          */
+        @Nullable
         private PrintStream getExportToTextPrintStream() {
             File file = generateFileMountedOnSDcard(mContext, R.string.file_path,
                     R.string.file_name_txt_format);
@@ -312,7 +319,8 @@ public class BackupUtils {
     /**
      * Generate the text file to store imported data
      */
-    private static File generateFileMountedOnSDcard(Context context, int filePathResId, int fileNameFormatResId) {
+    @Nullable
+    private static File generateFileMountedOnSDcard(@NonNull Context context, int filePathResId, int fileNameFormatResId) {
         StringBuilder sb = new StringBuilder();
         sb.append(Environment.getExternalStorageDirectory());
         sb.append(context.getString(filePathResId));

@@ -17,6 +17,8 @@
 package net.micode.notes.gtask.data;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import net.micode.notes.tool.GTaskStringUtils;
@@ -28,9 +30,10 @@ import org.json.JSONObject;
 public class MetaData extends Task {
     private final static String TAG = MetaData.class.getSimpleName();
 
+    @Nullable
     private String mRelatedGid = null;
 
-    public void setMeta(String gid, JSONObject metaInfo) {
+    public void setMeta(String gid, @NonNull JSONObject metaInfo) {
         try {
             metaInfo.put(GTaskStringUtils.META_HEAD_GTASK_ID, gid);
         } catch (JSONException e) {

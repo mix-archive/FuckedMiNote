@@ -26,21 +26,23 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 
 public class DateTimePickerDialog extends AlertDialog implements OnClickListener {
 
-    private Calendar mDate = Calendar.getInstance();
+    private final Calendar mDate = Calendar.getInstance();
     private boolean mIs24HourView;
     private OnDateTimeSetListener mOnDateTimeSetListener;
-    private DateTimePicker mDateTimePicker;
+    @NonNull
+    private final DateTimePicker mDateTimePicker;
 
     public interface OnDateTimeSetListener {
         void OnDateTimeSet(AlertDialog dialog, long date);
     }
 
-    public DateTimePickerDialog(Context context, long date) {
+    public DateTimePickerDialog(@NonNull Context context, long date) {
         super(context);
         mDateTimePicker = new DateTimePicker(context);
         setView(mDateTimePicker);
@@ -77,7 +79,7 @@ public class DateTimePickerDialog extends AlertDialog implements OnClickListener
             DateUtils.FORMAT_SHOW_YEAR |
             DateUtils.FORMAT_SHOW_DATE |
             DateUtils.FORMAT_SHOW_TIME;
-        flag |= mIs24HourView ? DateUtils.FORMAT_24HOUR : DateUtils.FORMAT_24HOUR;
+        flag |= DateUtils.FORMAT_24HOUR;
         setTitle(DateUtils.formatDateTime(this.getContext(), date, flag));
     }
 

@@ -21,6 +21,8 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -70,8 +72,10 @@ public class GTaskClient {
 
     private static final String GTASK_POST_URL = "https://mail.google.com/tasks/r/ig";
 
+    @Nullable
     private static GTaskClient mInstance = null;
 
+    @Nullable
     private DefaultHttpClient mHttpClient;
 
     private String mGetUrl;
@@ -86,8 +90,10 @@ public class GTaskClient {
 
     private int mActionId;
 
+    @Nullable
     private Account mAccount;
 
+    @Nullable
     private JSONArray mUpdateArray;
 
     private GTaskClient() {
@@ -102,6 +108,7 @@ public class GTaskClient {
         mUpdateArray = null;
     }
 
+    @NonNull
     public static synchronized GTaskClient getInstance() {
         if (mInstance == null) {
             mInstance = new GTaskClient();
@@ -109,7 +116,7 @@ public class GTaskClient {
         return mInstance;
     }
 
-    public boolean login(Activity activity) {
+    public boolean login(@NonNull Activity activity) {
         // we suppose that the cookie would expire after 5 minutes
         // then we need to re-login
         final long interval = 1000 * 60 * 5;
@@ -143,8 +150,8 @@ public class GTaskClient {
             int index = mAccount.name.indexOf('@') + 1;
             String suffix = mAccount.name.substring(index);
             url.append(suffix + "/");
-            mGetUrl = url.toString() + "ig";
-            mPostUrl = url.toString() + "r/ig";
+            mGetUrl = url + "ig";
+            mPostUrl = url + "r/ig";
 
             if (tryToLoginGtask(activity, authToken)) {
                 mLoggedin = true;
@@ -164,7 +171,8 @@ public class GTaskClient {
         return true;
     }
 
-    private String loginGoogleAccount(Activity activity, boolean invalidateToken) {
+    @Nullable
+    private String loginGoogleAccount(@NonNull Activity activity, boolean invalidateToken) {
         String authToken;
         AccountManager accountManager = AccountManager.get(activity);
         Account[] accounts = accountManager.getAccountsByType("com.google");
@@ -207,7 +215,7 @@ public class GTaskClient {
         return authToken;
     }
 
-    private boolean tryToLoginGtask(Activity activity, String authToken) {
+    private boolean tryToLoginGtask(@NonNull Activity activity, String authToken) {
         if (!loginGtask(authToken)) {
             // maybe the auth token is out of date, now let's invalidate the
             // token and try again
@@ -291,7 +299,8 @@ public class GTaskClient {
         return httpPost;
     }
 
-    private String getResponseContent(HttpEntity entity) throws IOException {
+    @NonNull
+    private String getResponseContent(@NonNull HttpEntity entity) throws IOException {
         String contentEncoding = null;
         if (entity.getContentEncoding() != null) {
             contentEncoding = entity.getContentEncoding().getValue();
@@ -323,7 +332,7 @@ public class GTaskClient {
         }
     }
 
-    private JSONObject postRequest(JSONObject js) throws NetworkFailureException {
+    private JSONObject postRequest(@NonNull JSONObject js) throws NetworkFailureException {
         if (!mLoggedin) {
             Log.e(TAG, "please login first");
             throw new ActionFailureException("not logged in");
@@ -360,7 +369,7 @@ public class GTaskClient {
         }
     }
 
-    public void createTask(Task task) throws NetworkFailureException {
+    public void createTask(@NonNull Task task) throws NetworkFailureException {
         commitUpdate();
         try {
             JSONObject jsPost = new JSONObject();
@@ -386,7 +395,7 @@ public class GTaskClient {
         }
     }
 
-    public void createTaskList(TaskList tasklist) throws NetworkFailureException {
+    public void createTaskList(@NonNull TaskList tasklist) throws NetworkFailureException {
         commitUpdate();
         try {
             JSONObject jsPost = new JSONObject();
@@ -433,7 +442,7 @@ public class GTaskClient {
         }
     }
 
-    public void addUpdateNode(Node node) throws NetworkFailureException {
+    public void addUpdateNode(@Nullable Node node) throws NetworkFailureException {
         if (node != null) {
             // too many update items may result in an error
             // set max to 10 items
@@ -447,7 +456,7 @@ public class GTaskClient {
         }
     }
 
-    public void moveTask(Task task, TaskList preParent, TaskList curParent)
+    public void moveTask(@NonNull Task task, @NonNull TaskList preParent, @NonNull TaskList curParent)
             throws NetworkFailureException {
         commitUpdate();
         try {
@@ -486,7 +495,7 @@ public class GTaskClient {
         }
     }
 
-    public void deleteNode(Node node) throws NetworkFailureException {
+    public void deleteNode(@NonNull Node node) throws NetworkFailureException {
         commitUpdate();
         try {
             JSONObject jsPost = new JSONObject();
@@ -547,6 +556,7 @@ public class GTaskClient {
         }
     }
 
+    @NonNull
     public JSONArray getTaskList(String listGid) throws NetworkFailureException {
         commitUpdate();
         try {

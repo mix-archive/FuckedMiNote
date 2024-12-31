@@ -22,6 +22,8 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import net.micode.notes.R;
@@ -61,6 +63,7 @@ public class GTaskManager {
 
     public static final int STATE_SYNC_CANCELLED = 4;
 
+    @Nullable
     private static GTaskManager mInstance = null;
 
     private Activity mActivity;
@@ -73,19 +76,26 @@ public class GTaskManager {
 
     private boolean mCancelled;
 
-    private HashMap<String, TaskList> mGTaskListHashMap;
+    @NonNull
+    private final HashMap<String, TaskList> mGTaskListHashMap;
 
-    private HashMap<String, Node> mGTaskHashMap;
+    @NonNull
+    private final HashMap<String, Node> mGTaskHashMap;
 
-    private HashMap<String, MetaData> mMetaHashMap;
+    @NonNull
+    private final HashMap<String, MetaData> mMetaHashMap;
 
+    @Nullable
     private TaskList mMetaList;
 
-    private HashSet<Long> mLocalDeleteIdMap;
+    @NonNull
+    private final HashSet<Long> mLocalDeleteIdMap;
 
-    private HashMap<String, Long> mGidToNid;
+    @NonNull
+    private final HashMap<String, Long> mGidToNid;
 
-    private HashMap<Long, String> mNidToGid;
+    @NonNull
+    private final HashMap<Long, String> mNidToGid;
 
     private GTaskManager() {
         mSyncing = false;
@@ -99,6 +109,7 @@ public class GTaskManager {
         mNidToGid = new HashMap<Long, String>();
     }
 
+    @NonNull
     public static synchronized GTaskManager getInstance() {
         if (mInstance == null) {
             mInstance = new GTaskManager();
@@ -111,7 +122,7 @@ public class GTaskManager {
         mActivity = activity;
     }
 
-    public int sync(Context context, GTaskASyncTask asyncTask) {
+    public int sync(Context context, @NonNull GTaskASyncTask asyncTask) {
         if (mSyncing) {
             Log.d(TAG, "Sync is in progress");
             return STATE_SYNC_IN_PROGRESS;
@@ -190,7 +201,7 @@ public class GTaskManager {
                     // load meta data
                     JSONArray jsMetas = client.getTaskList(gid);
                     for (int j = 0; j < jsMetas.length(); j++) {
-                        object = (JSONObject) jsMetas.getJSONObject(j);
+                        object = jsMetas.getJSONObject(j);
                         MetaData metaData = new MetaData();
                         metaData.setContentByRemoteJSON(object);
                         if (metaData.isWorthSaving()) {
@@ -228,7 +239,7 @@ public class GTaskManager {
                     // load tasks
                     JSONArray jsTasks = client.getTaskList(gid);
                     for (int j = 0; j < jsTasks.length(); j++) {
-                        object = (JSONObject) jsTasks.getJSONObject(j);
+                        object = jsTasks.getJSONObject(j);
                         gid = object.getString(GTaskStringUtils.GTASK_JSON_ID);
                         Task task = new Task();
                         task.setContentByRemoteJSON(object);
@@ -476,7 +487,7 @@ public class GTaskManager {
             GTaskClient.getInstance().commitUpdate();
     }
 
-    private void doContentSync(int syncType, Node node, Cursor c) throws NetworkFailureException {
+    private void doContentSync(int syncType, @NonNull Node node, @NonNull Cursor c) throws NetworkFailureException {
         if (mCancelled) {
             return;
         }
@@ -596,7 +607,7 @@ public class GTaskManager {
         updateRemoteMeta(node.getGid(), sqlNote);
     }
 
-    private void updateLocalNode(Node node, Cursor c) throws NetworkFailureException {
+    private void updateLocalNode(@NonNull Node node, Cursor c) throws NetworkFailureException {
         if (mCancelled) {
             return;
         }
@@ -607,7 +618,7 @@ public class GTaskManager {
         sqlNote.setContent(node.getLocalJSONFromContent());
 
         Long parentId = (node instanceof Task) ? mGidToNid.get(((Task) node).getParent().getGid())
-                : new Long(Notes.ID_ROOT_FOLDER);
+                : Long.valueOf(Notes.ID_ROOT_FOLDER);
         if (parentId == null) {
             Log.e(TAG, "cannot find task's parent id locally");
             throw new ActionFailureException("cannot update local node");
@@ -640,7 +651,7 @@ public class GTaskManager {
             mGTaskListHashMap.get(parentGid).addChildTask(task);
 
             GTaskClient.getInstance().createTask(task);
-            n = (Node) task;
+            n = task;
 
             // add meta
             updateRemoteMeta(task.getGid(), sqlNote);
@@ -664,9 +675,7 @@ public class GTaskManager {
 
                 if (list.getName().equals(folderName)) {
                     tasklist = list;
-                    if (mGTaskHashMap.containsKey(gid)) {
-                        mGTaskHashMap.remove(gid);
-                    }
+                    mGTaskHashMap.remove(gid);
                     break;
                 }
             }
@@ -678,7 +687,7 @@ public class GTaskManager {
                 GTaskClient.getInstance().createTaskList(tasklist);
                 mGTaskListHashMap.put(tasklist.getGid(), tasklist);
             }
-            n = (Node) tasklist;
+            n = tasklist;
         }
 
         // update local note
@@ -692,7 +701,7 @@ public class GTaskManager {
         mNidToGid.put(sqlNote.getId(), n.getGid());
     }
 
-    private void updateRemoteNode(Node node, Cursor c) throws NetworkFailureException {
+    private void updateRemoteNode(@NonNull Node node, Cursor c) throws NetworkFailureException {
         if (mCancelled) {
             return;
         }
@@ -730,7 +739,7 @@ public class GTaskManager {
         sqlNote.commit(true);
     }
 
-    private void updateRemoteMeta(String gid, SqlNote sqlNote) throws NetworkFailureException {
+    private void updateRemoteMeta(String gid, @Nullable SqlNote sqlNote) throws NetworkFailureException {
         if (sqlNote != null && sqlNote.isNoteType()) {
             MetaData metaData = mMetaHashMap.get(gid);
             if (metaData != null) {

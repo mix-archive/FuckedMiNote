@@ -32,6 +32,8 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -65,6 +67,7 @@ public class NotesPreferenceActivity extends PreferenceActivity {
 
     private GTaskReceiver mReceiver;
 
+    @Nullable
     private Account[] mOriAccounts;
 
     private boolean mHasAddedAccount;
@@ -155,8 +158,8 @@ public class NotesPreferenceActivity extends PreferenceActivity {
     }
 
     private void loadSyncButton() {
-        Button syncButton = (Button) findViewById(R.id.preference_sync_button);
-        TextView lastSyncTimeView = (TextView) findViewById(R.id.prefenerece_sync_status_textview);
+        Button syncButton = findViewById(R.id.preference_sync_button);
+        TextView lastSyncTimeView = findViewById(R.id.prefenerece_sync_status_textview);
 
         // set button state
         if (GTaskSyncService.isSyncing()) {
@@ -202,9 +205,9 @@ public class NotesPreferenceActivity extends PreferenceActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 
         View titleView = LayoutInflater.from(this).inflate(R.layout.account_dialog_title, null);
-        TextView titleTextView = (TextView) titleView.findViewById(R.id.account_dialog_title);
+        TextView titleTextView = titleView.findViewById(R.id.account_dialog_title);
         titleTextView.setText(getString(R.string.preferences_dialog_select_account_title));
-        TextView subtitleTextView = (TextView) titleView.findViewById(R.id.account_dialog_subtitle);
+        TextView subtitleTextView = titleView.findViewById(R.id.account_dialog_subtitle);
         subtitleTextView.setText(getString(R.string.preferences_dialog_select_account_tips));
 
         dialogBuilder.setCustomTitle(titleView);
@@ -229,7 +232,7 @@ public class NotesPreferenceActivity extends PreferenceActivity {
             }
             dialogBuilder.setSingleChoiceItems(items, checkedItem,
                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(@NonNull DialogInterface dialog, int which) {
                             setSyncAccount(itemMapping[which].toString());
                             dialog.dismiss();
                             refreshUI();
@@ -258,10 +261,10 @@ public class NotesPreferenceActivity extends PreferenceActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 
         View titleView = LayoutInflater.from(this).inflate(R.layout.account_dialog_title, null);
-        TextView titleTextView = (TextView) titleView.findViewById(R.id.account_dialog_title);
+        TextView titleTextView = titleView.findViewById(R.id.account_dialog_title);
         titleTextView.setText(getString(R.string.preferences_dialog_change_account_title,
                 getSyncAccountName(this)));
-        TextView subtitleTextView = (TextView) titleView.findViewById(R.id.account_dialog_subtitle);
+        TextView subtitleTextView = titleView.findViewById(R.id.account_dialog_subtitle);
         subtitleTextView.setText(getString(R.string.preferences_dialog_change_account_warn_msg));
         dialogBuilder.setCustomTitle(titleView);
 
@@ -283,12 +286,13 @@ public class NotesPreferenceActivity extends PreferenceActivity {
         dialogBuilder.show();
     }
 
+    @NonNull
     private Account[] getGoogleAccounts() {
         AccountManager accountManager = AccountManager.get(this);
         return accountManager.getAccountsByType("com.google");
     }
 
-    private void setSyncAccount(String account) {
+    private void setSyncAccount(@Nullable String account) {
         if (!getSyncAccountName(this).equals(account)) {
             SharedPreferences settings = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = settings.edit();
@@ -340,13 +344,14 @@ public class NotesPreferenceActivity extends PreferenceActivity {
         }).start();
     }
 
-    public static String getSyncAccountName(Context context) {
+    @NonNull
+    public static String getSyncAccountName(@NonNull Context context) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCE_NAME,
                 Context.MODE_PRIVATE);
         return settings.getString(PREFERENCE_SYNC_ACCOUNT_NAME, "");
     }
 
-    public static void setLastSyncTime(Context context, long time) {
+    public static void setLastSyncTime(@NonNull Context context, long time) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
@@ -354,7 +359,7 @@ public class NotesPreferenceActivity extends PreferenceActivity {
         editor.commit();
     }
 
-    public static long getLastSyncTime(Context context) {
+    public static long getLastSyncTime(@NonNull Context context) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCE_NAME,
                 Context.MODE_PRIVATE);
         return settings.getLong(PREFERENCE_LAST_SYNC_TIME, 0);
@@ -363,10 +368,10 @@ public class NotesPreferenceActivity extends PreferenceActivity {
     private class GTaskReceiver extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             refreshUI();
             if (intent.getBooleanExtra(GTaskSyncService.GTASK_SERVICE_BROADCAST_IS_SYNCING, false)) {
-                TextView syncStatus = (TextView) findViewById(R.id.prefenerece_sync_status_textview);
+                TextView syncStatus = findViewById(R.id.prefenerece_sync_status_textview);
                 syncStatus.setText(intent
                         .getStringExtra(GTaskSyncService.GTASK_SERVICE_BROADCAST_PROGRESS_MSG));
             }
@@ -374,7 +379,7 @@ public class NotesPreferenceActivity extends PreferenceActivity {
         }
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, NotesListActivity.class);

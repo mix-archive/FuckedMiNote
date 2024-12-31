@@ -30,6 +30,8 @@ import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -132,6 +134,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private View mNoteEditorPanel;
 
+    @Nullable
     private WorkingNote mWorkingNote;
 
     private SharedPreferences mSharedPrefs;
@@ -146,11 +149,12 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private LinearLayout mEditTextList;
 
+    @Nullable
     private String mUserQuery;
     private Pattern mPattern;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.note_edit);
 
@@ -166,7 +170,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
      * user load this activity, we should restore the former state
      */
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null && savedInstanceState.containsKey(Intent.EXTRA_UID)) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -179,7 +183,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         }
     }
 
-    private boolean initActivityState(Intent intent) {
+    private boolean initActivityState(@NonNull Intent intent) {
         /**
          * If the user specified the {@link Intent#ACTION_VIEW} but not provided with id,
          * then jump to the NotesListActivity
@@ -309,17 +313,17 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         } else {
             mNoteHeaderHolder.tvAlertDate.setVisibility(View.GONE);
             mNoteHeaderHolder.ivAlertIcon.setVisibility(View.GONE);
-        };
+        }
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         initActivityState(intent);
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         /**
          * For new note without note id, we should firstly save it to
@@ -334,7 +338,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
         if (mNoteBgColorSelector.getVisibility() == View.VISIBLE
                 && !inRangeOfView(mNoteBgColorSelector, ev)) {
             mNoteBgColorSelector.setVisibility(View.GONE);
@@ -349,33 +353,30 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         return super.dispatchTouchEvent(ev);
     }
 
-    private boolean inRangeOfView(View view, MotionEvent ev) {
+    private boolean inRangeOfView(@NonNull View view, @NonNull MotionEvent ev) {
         int []location = new int[2];
         view.getLocationOnScreen(location);
         int x = location[0];
         int y = location[1];
-        if (ev.getX() < x
-                || ev.getX() > (x + view.getWidth())
-                || ev.getY() < y
-                || ev.getY() > (y + view.getHeight())) {
-                    return false;
-                }
-        return true;
+        return !(ev.getX() < x)
+                && !(ev.getX() > (x + view.getWidth()))
+                && !(ev.getY() < y)
+                && !(ev.getY() > (y + view.getHeight()));
     }
 
     private void initResources() {
         mHeadViewPanel = findViewById(R.id.note_title);
         mNoteHeaderHolder = new HeadViewHolder();
-        mNoteHeaderHolder.tvModified = (TextView) findViewById(R.id.tv_modified_date);
-        mNoteHeaderHolder.ivAlertIcon = (ImageView) findViewById(R.id.iv_alert_icon);
-        mNoteHeaderHolder.tvAlertDate = (TextView) findViewById(R.id.tv_alert_date);
-        mNoteHeaderHolder.ibSetBgColor = (ImageView) findViewById(R.id.btn_set_bg_color);
+        mNoteHeaderHolder.tvModified = findViewById(R.id.tv_modified_date);
+        mNoteHeaderHolder.ivAlertIcon = findViewById(R.id.iv_alert_icon);
+        mNoteHeaderHolder.tvAlertDate = findViewById(R.id.tv_alert_date);
+        mNoteHeaderHolder.ibSetBgColor = findViewById(R.id.btn_set_bg_color);
         mNoteHeaderHolder.ibSetBgColor.setOnClickListener(this);
-        mNoteEditor = (EditText) findViewById(R.id.note_edit_view);
+        mNoteEditor = findViewById(R.id.note_edit_view);
         mNoteEditorPanel = findViewById(R.id.sv_note_edit);
         mNoteBgColorSelector = findViewById(R.id.note_bg_color_selector);
         for (int id : sBgSelectorBtnsMap.keySet()) {
-            ImageView iv = (ImageView) findViewById(id);
+            ImageView iv = findViewById(id);
             iv.setOnClickListener(this);
         }
 
@@ -383,7 +384,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         for (int id : sFontSizeBtnsMap.keySet()) {
             View view = findViewById(id);
             view.setOnClickListener(this);
-        };
+        }
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mFontSizeId = mSharedPrefs.getInt(PREFERENCE_FONT_SIZE, ResourceParser.BG_DEFAULT_FONT_SIZE);
         /**
@@ -394,7 +395,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         if(mFontSizeId >= TextAppearanceResources.getResourcesSize()) {
             mFontSizeId = ResourceParser.BG_DEFAULT_FONT_SIZE;
         }
-        mEditTextList = (LinearLayout) findViewById(R.id.note_edit_list);
+        mEditTextList = findViewById(R.id.note_edit_list);
     }
 
     @Override
@@ -425,7 +426,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         setResult(RESULT_OK, intent);
     }
 
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         int id = v.getId();
         if (id == R.id.btn_set_bg_color) {
             mNoteBgColorSelector.setVisibility(View.VISIBLE);
@@ -481,7 +482,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         if (isFinishing()) {
             return true;
         }
@@ -506,7 +507,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_new_note:
                 createNewNote();
@@ -567,7 +568,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
      * Share note to apps that support {@link Intent#ACTION_SEND} action
      * and {@text/plain} type
      */
-    private void sendTo(Context context, String info) {
+    private void sendTo(@NonNull Context context, String info) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, info);
         intent.setType("text/plain");
@@ -660,10 +661,10 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         mEditTextList.removeViewAt(index);
         NoteEditText edit = null;
         if(index == 0) {
-            edit = (NoteEditText) mEditTextList.getChildAt(0).findViewById(
+            edit = mEditTextList.getChildAt(0).findViewById(
                     R.id.et_edit_text);
         } else {
-            edit = (NoteEditText) mEditTextList.getChildAt(index - 1).findViewById(
+            edit = mEditTextList.getChildAt(index - 1).findViewById(
                     R.id.et_edit_text);
         }
         int length = edit.length();
@@ -672,7 +673,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         edit.setSelection(length);
     }
 
-    public void onEditTextEnter(int index, String text) {
+    public void onEditTextEnter(int index, @NonNull String text) {
         /**
          * Should not happen, check for debug
          */
@@ -682,7 +683,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
         View view = getListItem(text, index);
         mEditTextList.addView(view, index);
-        NoteEditText edit = (NoteEditText) view.findViewById(R.id.et_edit_text);
+        NoteEditText edit = view.findViewById(R.id.et_edit_text);
         edit.requestFocus();
         edit.setSelection(0);
         for (int i = index + 1; i < mEditTextList.getChildCount(); i++) {
@@ -691,7 +692,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         }
     }
 
-    private void switchToListMode(String text) {
+    private void switchToListMode(@NonNull String text) {
         mEditTextList.removeAllViews();
         String[] items = text.split("\n");
         int index = 0;
@@ -708,7 +709,8 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         mEditTextList.setVisibility(View.VISIBLE);
     }
 
-    private Spannable getHighlightQueryResult(String fullText, String userQuery) {
+    @NonNull
+    private Spannable getHighlightQueryResult(@Nullable String fullText, @NonNull String userQuery) {
         SpannableString spannable = new SpannableString(fullText == null ? "" : fullText);
         if (!TextUtils.isEmpty(userQuery)) {
             mPattern = Pattern.compile(userQuery);
@@ -725,11 +727,12 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         return spannable;
     }
 
-    private View getListItem(String item, int index) {
+    @NonNull
+    private View getListItem(@NonNull String item, int index) {
         View view = LayoutInflater.from(this).inflate(R.layout.note_edit_list_item, null);
-        final NoteEditText edit = (NoteEditText) view.findViewById(R.id.et_edit_text);
+        final NoteEditText edit = view.findViewById(R.id.et_edit_text);
         edit.setTextAppearance(this, TextAppearanceResources.getTexAppearanceResource(mFontSizeId));
-        CheckBox cb = ((CheckBox) view.findViewById(R.id.cb_edit_item));
+        CheckBox cb = view.findViewById(R.id.cb_edit_item);
         cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -743,11 +746,11 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         if (item.startsWith(TAG_CHECKED)) {
             cb.setChecked(true);
             edit.setPaintFlags(edit.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            item = item.substring(TAG_CHECKED.length(), item.length()).trim();
+            item = item.substring(TAG_CHECKED.length()).trim();
         } else if (item.startsWith(TAG_UNCHECKED)) {
             cb.setChecked(false);
             edit.setPaintFlags(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG);
-            item = item.substring(TAG_UNCHECKED.length(), item.length()).trim();
+            item = item.substring(TAG_UNCHECKED.length()).trim();
         }
 
         edit.setOnTextViewChangeListener(this);
@@ -788,7 +791,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < mEditTextList.getChildCount(); i++) {
                 View view = mEditTextList.getChildAt(i);
-                NoteEditText edit = (NoteEditText) view.findViewById(R.id.et_edit_text);
+                NoteEditText edit = view.findViewById(R.id.et_edit_text);
                 if (!TextUtils.isEmpty(edit.getText())) {
                     if (((CheckBox) view.findViewById(R.id.cb_edit_item)).isChecked()) {
                         sb.append(TAG_CHECKED).append(" ").append(edit.getText()).append("\n");
@@ -856,6 +859,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
         }
     }
 
+    @NonNull
     private String makeShortcutIconTitle(String content) {
         content = content.replace(TAG_CHECKED, "");
         content = content.replace(TAG_UNCHECKED, "");

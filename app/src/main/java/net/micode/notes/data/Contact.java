@@ -20,6 +20,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
@@ -36,9 +38,10 @@ public class Contact {
             + " FROM phone_lookup"
             + " WHERE min_match = '+')";
 
-    public static String getContact(Context context, String phoneNumber) {
+    @Nullable
+    public static String getContact(@NonNull Context context, String phoneNumber) {
         if(sContactCache == null) {
-            sContactCache = new HashMap<String, String>();
+            sContactCache = new HashMap<>();
         }
 
         if(sContactCache.containsKey(phoneNumber)) {
@@ -60,7 +63,7 @@ public class Contact {
                 sContactCache.put(phoneNumber, name);
                 return name;
             } catch (IndexOutOfBoundsException e) {
-                Log.e(TAG, " Cursor get string error " + e.toString());
+                Log.e(TAG, " Cursor get string error " + e);
                 return null;
             } finally {
                 cursor.close();

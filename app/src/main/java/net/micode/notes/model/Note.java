@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import net.micode.notes.data.Notes;
@@ -35,13 +37,15 @@ import java.util.ArrayList;
 
 
 public class Note {
-    private ContentValues mNoteDiffValues;
-    private NoteData mNoteData;
+    @NonNull
+    private final ContentValues mNoteDiffValues;
+    @NonNull
+    private final NoteData mNoteData;
     private static final String TAG = "Note";
     /**
      * Create a new note id for adding a new note to databases
      */
-    public static synchronized long getNewNoteId(Context context, long folderId) {
+    public static synchronized long getNewNoteId(@NonNull Context context, long folderId) {
         // Create a new note in the database
         ContentValues values = new ContentValues();
         long createdTime = System.currentTimeMillis();
@@ -56,7 +60,7 @@ public class Note {
         try {
             noteId = Long.valueOf(uri.getPathSegments().get(1));
         } catch (NumberFormatException e) {
-            Log.e(TAG, "Get note id error :" + e.toString());
+            Log.e(TAG, "Get note id error :" + e);
             noteId = 0;
         }
         if (noteId == -1) {
@@ -100,7 +104,7 @@ public class Note {
         return mNoteDiffValues.size() > 0 || mNoteData.isLocalModified();
     }
 
-    public boolean syncNote(Context context, long noteId) {
+    public boolean syncNote(@NonNull Context context, long noteId) {
         if (noteId <= 0) {
             throw new IllegalArgumentException("Wrong note id:" + noteId);
         }
@@ -122,22 +126,20 @@ public class Note {
         }
         mNoteDiffValues.clear();
 
-        if (mNoteData.isLocalModified()
-                && (mNoteData.pushIntoContentResolver(context, noteId) == null)) {
-            return false;
-        }
-
-        return true;
+        return !mNoteData.isLocalModified()
+                || (mNoteData.pushIntoContentResolver(context, noteId) != null);
     }
 
     private class NoteData {
         private long mTextDataId;
 
-        private ContentValues mTextDataValues;
+        @NonNull
+        private final ContentValues mTextDataValues;
 
         private long mCallDataId;
 
-        private ContentValues mCallDataValues;
+        @NonNull
+        private final ContentValues mCallDataValues;
 
         private static final String TAG = "NoteData";
 
@@ -178,7 +180,8 @@ public class Note {
             mNoteDiffValues.put(NoteColumns.MODIFIED_DATE, System.currentTimeMillis());
         }
 
-        Uri pushIntoContentResolver(Context context, long noteId) {
+        @Nullable
+        Uri pushIntoContentResolver(@NonNull Context context, long noteId) {
             /**
              * Check for safety
              */
@@ -240,10 +243,10 @@ public class Note {
                     return (results == null || results.length == 0 || results[0] == null) ? null
                             : ContentUris.withAppendedId(Notes.CONTENT_NOTE_URI, noteId);
                 } catch (RemoteException e) {
-                    Log.e(TAG, String.format("%s: %s", e.toString(), e.getMessage()));
+                    Log.e(TAG, String.format("%s: %s", e, e.getMessage()));
                     return null;
                 } catch (OperationApplicationException e) {
-                    Log.e(TAG, String.format("%s: %s", e.toString(), e.getMessage()));
+                    Log.e(TAG, String.format("%s: %s", e, e.getMessage()));
                     return null;
                 }
             }
